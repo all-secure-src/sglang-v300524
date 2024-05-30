@@ -1,12 +1,12 @@
-"""Inference-only LLaVa model compatible with HuggingFace weights."""
+"""Inference-only OmegaSparkVision model compatible with HuggingFace weights."""
 
 from typing import List, Iterable, Optional, Tuple
 
 import numpy as np
 import torch
 from torch import nn
-from transformers import CLIPVisionModel, CLIPVisionConfig, LlavaConfig, Qwen2Config, MistralConfig 
-from transformers.models.llava.modeling_llava import LlavaMultiModalProjector
+from transformers import CLIPVisionModel, CLIPVisionConfig, AutoConfig
+from sglang.srt.models.modeling.modeling_omegasparkvision import OmegaSparkVisionMultiModalProjector
 from vllm.model_executor.layers.quantization.base_config import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 
@@ -18,14 +18,12 @@ from sglang.srt.mm_utils import (
     unpad_image_shape,
 )
 from sglang.srt.models.omegaspark import OmegaSparkForCausalLM
-from sglang.srt.models.qwen2 import Qwen2ForCausalLM
-from sglang.srt.models.mistral import MistralForCausalLM
 
 
 class OmegaSparkVisionForCausalLM(nn.Module):
     def __init__(
         self,
-        config: LlavaConfig,
+        config: AutoConfig,
         quant_config: Optional[QuantizationConfig] = None,
     ) -> None:
         super().__init__()
@@ -33,7 +31,7 @@ class OmegaSparkVisionForCausalLM(nn.Module):
         self.vision_tower = None
         self.config.vision_config.hidden_size = config.mm_hidden_size
         self.config.text_config.hidden_size = config.hidden_size
-        self.multi_modal_projector = LlavaMultiModalProjector(config)
+        self.multi_modal_projector = OmegaSparkVisionMultiModalProjector(config)
         self.language_model = OmegaSparkForCausalLM(config, quant_config=quant_config)
         if "unpad" in getattr(config, "mm_patch_merge_type", ""):
             self.language_model.model.image_newline = nn.Parameter(

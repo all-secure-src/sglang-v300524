@@ -208,7 +208,7 @@ class OmegaSparkDecoderLayer(nn.Module):
 class OmegaSparkModel(nn.Module):
     def __init__(
         self,
-        config: OmegaSparkConfig,
+        config: AutoConfig,
         quant_config: Optional[QuantizationConfig] = None,
     ) -> None:
         super().__init__()
