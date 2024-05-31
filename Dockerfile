@@ -6,6 +6,15 @@ WORKDIR /opt
 COPY python/sglang /opt/sglang
 
 WORKDIR /opt/sglang
-RUN pip install --upgrade pip && \
-    pip install -e ".[all]" && \
-    pip install datasets
+
+# Upgrade pip first
+RUN pip install --upgrade pip
+
+# Install the sglang package with all extras
+RUN pip install -e ".[all]"
+
+# Install the datasets package
+RUN pip install datasets
+
+# To verify the installations, let's add commands to list the installed packages
+RUN pip list
